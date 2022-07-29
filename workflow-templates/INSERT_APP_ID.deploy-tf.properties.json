@@ -1,0 +1,7 @@
+{
+  "name": "Deploy Terraform release",
+  "description": "Deploy a released Terraform plan",
+  "categories": [
+    "terraform"
+  ]
+}

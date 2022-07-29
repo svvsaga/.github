@@ -1,4 +1,13 @@
-name: Create Terraform release
+# Find and replace the following:
+# INSERT_APP_NAME -> Title cased name of the app, e.g. "Data Catalog"
+# INSERT_APP_ID -> lowercase identifier, e.g. "datacatalog". Also replace filename!
+# INSERT_APP_ROOT -> subdirectory of repo where a "terraform" folder can be found
+#
+# Make sure following secrets are set:
+# ACTIONS_APP_ID -> Application ID for GitHub App installed in your organization with repo read permissions (for reading terraform-modules from svvsaga/terraform-modules)
+# ACTIONS_APP_PEM -> Private key for app installation
+
+name: INSERT_APP_ID - Create Terraform release
 on:
   workflow_dispatch:
     inputs:
@@ -9,14 +18,8 @@ on:
     branches:
       - $default_branch
     paths:
-      - TODO/terraform/**
+      - INSERT_APP_ROOT/terraform/**
       - "!**/*.md"
-
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  REF: ${{ inputs.ref || github.sha }}
-  APP_ID: TODO
-  RELEASE_VERSION: ${{ github.run_number }}
 
 jobs:
   create_release:
@@ -26,6 +29,11 @@ jobs:
       - name: Create release
         id: create_release
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REF: ${{ inputs.ref || github.sha }}
+          APP_ID: INSERT_APP_ID
+          RELEASE_VERSION: ${{ github.run_number }}
         with:
           tag_name: ${{ env.APP_ID }}-TF-v${{ env.RELEASE_VERSION }}
           release_name: ${{ env.APP_ID }}-TF-v${{ env.RELEASE_VERSION }}
@@ -39,7 +47,7 @@ jobs:
     uses: svvsaga/github-actions-public/.github/workflows/publish-terraform-plans.yml@v9.0.0
     with:
       ref: ${{ inputs.ref || github.sha }}
-      app_root: TODO
+      app_root: INSERT_APP_ROOT
       release_id: ${{ needs.create_release.outputs.release_id }}
     secrets:
       github_app_private_key: ${{ secrets.ACTIONS_APP_PEM }}

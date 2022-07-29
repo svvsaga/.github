@@ -1,0 +1,48 @@
+# Find and replace the following:
+# INSERT_APP_NAME -> Title cased name of the app, e.g. "Data Catalog"
+# INSERT_APP_ID -> lowercase identifier, e.g. "datacatalog". Also replace filename!
+# INSERT_APP_ROOT -> subdirectory of repo where a "terraform" folder can be found
+# INSERT_UPPERCASE_APP_ID -> Same as App ID, but fully uppercased, to find matching secret
+#
+# Make sure following secrets are set:
+# ACTIONS_APP_ID -> Application ID for GitHub App installed in your organization with repo read permissions (for reading terraform-modules from svvsaga/terraform-modules)
+# ACTIONS_APP_PEM -> Private key for app installation
+# GCP_SA_<UPPERCASE_APP_ID>_TERRAFORM_<ENVIRONMENT> -> JSON key for Terraform SA, per environment (STM, ATM, PROD)
+
+name: INSERT_APP_NAME - Deploy Terraform release
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Which release to deploy, e.g. "INSERT_APP_ID-TF-v13"
+        required: true
+        default: INSERT_APP_ID-TF-v
+        type: string
+      environment:
+        description: Which environment to deploy to (STM, ATM or PROD). Defaults to STM.
+        required: true
+        default: STM
+        type: choice
+        options:
+          - STM
+          - ATM
+          - PROD
+      skip_diff:
+        required: false
+        default: 'false'
+        description: Set to 'true' to apply Terraform plan without checking if state has changed since plan was created.
+        type: boolean
+
+jobs:
+  deploy:
+    uses: svvsaga/github-actions-public/.github/workflows/apply-terraform-plan.yml@v9.0.1
+    with:
+      ref: ${{ inputs.ref }}
+      environment: ${{ inputs.environment }}
+      skip_diff: ${{ inputs.skip_diff }}
+      app_root: INSERT_APP_ROOT
+      application_name: INSERT_APP_NAME
+    secrets:
+      github_app_private_key: ${{ secrets.ACTIONS_APP_PEM }}
+      github_app_id: ${{ secrets.ACTIONS_APP_ID }}
+      service_account_key: ${{ secrets[format('GCP_SA_{0}_TERRAFORM_{1}', 'INSERT_UPPERCASE_APP_ID', inputs.environment)] }}
