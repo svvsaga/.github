@@ -1,0 +1,46 @@
+name: Create Terraform release
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Which commit, tag or branch to plan terraform from. Defaults to same as workflow is run from if empty.
+        required: false
+  push:
+    branches:
+      - $default_branch
+    paths:
+      - TODO/terraform/**
+      - "!**/*.md"
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  REF: ${{ inputs.ref || github.sha }}
+  APP_ID: TODO
+  RELEASE_VERSION: ${{ github.run_number }}
+
+jobs:
+  create_release:
+    name: Create release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ env.APP_ID }}-TF-v${{ env.RELEASE_VERSION }}
+          release_name: ${{ env.APP_ID }}-TF-v${{ env.RELEASE_VERSION }}
+          commitish: ${{ env.REF }}
+    outputs:
+      release_id: ${{ steps.create_release.outputs.id }}
+
+  publish_plans:
+    name: Publish Terraform plans
+    needs: create_release
+    uses: svvsaga/github-actions-public/.github/workflows/publish-terraform-plans.yml@v9.0.0
+    with:
+      ref: ${{ inputs.ref || github.sha }}
+      app_root: TODO
+      release_id: ${{ needs.create_release.outputs.release_id }}
+    secrets:
+      github_app_private_key: ${{ secrets.ACTIONS_APP_PEM }}
+      github_app_id: ${{ secrets.ACTIONS_APP_ID }}

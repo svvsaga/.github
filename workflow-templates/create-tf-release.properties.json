@@ -1,0 +1,7 @@
+{
+  "name": "Create Terraform release",
+  "description": "Publish a Terraform plan and create a GitHub release",
+  "categories": [
+    "terraform"
+  ]
+}
