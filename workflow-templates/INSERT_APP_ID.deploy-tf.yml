@@ -35,7 +35,7 @@ on:
 
 jobs:
   deploy:
-    uses: svvsaga/github-actions-public/.github/workflows/apply-terraform-plan.yml@v9.0.1
+    uses: svvsaga/github-actions-public/.github/workflows/apply-terraform-plan.yml@v22.3.2
     with:
       ref: ${{ inputs.ref }}
       environment: ${{ inputs.environment }}
