@@ -44,7 +44,7 @@ jobs:
   publish_plans:
     name: Publish Terraform plans
     needs: create_release
-    uses: svvsaga/github-actions-public/.github/workflows/publish-terraform-plans.yml@v22.3.4
+    uses: svvsaga/github-actions-public/.github/workflows/publish-terraform-plans.yml@v24.0.0
     with:
       ref: ${{ inputs.ref || github.sha }}
       app_root: INSERT_APP_ROOT
